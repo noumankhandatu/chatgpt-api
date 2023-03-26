@@ -21,24 +21,27 @@ const openai = new OpenAIApi(configuration);
 
 app.post("/chatgpt", async (req, res) => {
   const { prompt } = req.body;
-  try {
+  const MAX_PROMPT_LENGTH = 2048; // Maximum prompt length allowed by OpenAI API
+  const promptParts = [];
+  for (let i = 0; i < prompt.length; i += MAX_PROMPT_LENGTH) {
+    promptParts.push(prompt.slice(i, i + MAX_PROMPT_LENGTH));
+  }
+  let responseParts = [];
+  for (let i = 0; i < promptParts.length; i++) {
     const response = await openai
       .createChatCompletion({
         model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: prompt }],
+        messages: [{ role: "user", content: promptParts[i] }],
       })
       .catch((err) => {
         console.log(err, "the error");
       });
     if (response) {
-      return res
-        .status(200)
-        .send({ message: response?.data?.choices[0]?.message.content });
+      responseParts.push(response?.data?.choices[0]?.message.content);
     }
-  } catch (error) {
-    console.log(error);
-    return false;
   }
+  const response = responseParts.join("");
+  return res.status(200).send({ message: response });
 });
 app.get("/", (req, res) => {
   res.send("hello world");
