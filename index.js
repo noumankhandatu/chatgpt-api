@@ -40,7 +40,9 @@ app.post("/chatgpt", async (req, res) => {
     return false;
   }
 });
-
+app.get("/", (req, res) => {
+  res.send("hello world");
+});
 app.listen(PORT, () => {
   console.log("server up and running");
 });
