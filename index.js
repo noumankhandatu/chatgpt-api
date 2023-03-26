@@ -43,6 +43,9 @@ app.post("/chatgpt", async (req, res) => {
 app.get("/", (req, res) => {
   res.send("hello world");
 });
+app.post("/", (req, res) => {
+  return res.send(process.env.ORG_KEY);
+});
 app.listen(PORT, () => {
   console.log("server up and running");
 });
