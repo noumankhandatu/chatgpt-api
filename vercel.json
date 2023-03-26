@@ -1,7 +1,11 @@
 {
   "version": 2,
   "functions": {
-    "/index.js": {
+    "api/**/*.js": {
+      "runtime": "@vercel/node12"
+    },
+    "/chatgpt": {
+      "runtime": "@vercel/node12",
       "maxDuration": 60
     }
   }
