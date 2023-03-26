@@ -19,14 +19,21 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-app.post("/chatgpt", async (req, res) => {
+app.post("/chatgpt", async (req, res, context) => {
   const { prompt } = req.body;
   try {
+    const timeout = 30; // set the timeout to 30 seconds
     const response = await openai
-      .createChatCompletion({
-        model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: prompt }],
-      })
+      .createChatCompletion(
+        {
+          model: "gpt-3.5-turbo",
+          messages: [{ role: "user", content: prompt }],
+        },
+        {
+          timeout:
+            Math.floor(context.getRemainingTimeInMillis() / 1000) - timeout, // subtract the desired timeout from the remaining time
+        }
+      )
       .catch((err) => {
         console.log(err, "the error");
       });
@@ -40,6 +47,7 @@ app.post("/chatgpt", async (req, res) => {
     return false;
   }
 });
+
 app.get("/", (req, res) => {
   res.send("hello world");
 });
